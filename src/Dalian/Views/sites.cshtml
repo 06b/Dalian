@@ -1,0 +1,27 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+
+@{
+    Layout = "Views/Shared/_Layout.cshtml";
+}
+
+
+<form action="/sites" method="post">
+    <input type="text" name="Name" maxlength="255" placeholder="Name" />
+    <input type="url" name="Url" maxlength="2000" placeholder="Url" />
+    <textarea name="Note" maxlength="500" placeholder="Notes"></textarea>
+    <input type="text"  name="Source" maxlength="255" placeholder="Source" />
+    <input type="checkbox" name="bookmarklet" id="bookmarklet">
+    <label for="bookmarklet">Bookmarklet?</label>
+    <input type="checkbox" name="ReadItLater" id="rit">
+    <label for="rit">Read It Later?</label>
+    <input type="checkbox" name="Clipped" id="clipped">
+    <label for="clipped">Clipped to OneNote</label>
+    <input type="checkbox" name="Highlight" id="highlight">
+    <label for="highlight">Highlight?</label>
+    <input type="checkbox" name="PersonalHighlight" id="personalHighlight">
+    <label for="personalHighlight">Personal Highlight?</label>
+    <input type="url" name="ArchiveUrl" maxlength="2000" placeholder="Archive Url" />
+    <input type="submit" value="Add" />
+</form>
+
+
