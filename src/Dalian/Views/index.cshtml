@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -6,5 +7,14 @@
 </head>
 <body>
     Dalian
+
+    <ul>
+        @foreach (var site in Model)
+        {
+            <li>@site.SiteId</li>
+            <li>@site.Name</li>
+            <li>@site.Url</li>
+        }
+    </ul>
 </body>
 </html>
