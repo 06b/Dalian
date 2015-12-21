@@ -5,23 +5,50 @@
 }
 
 
-<form action="/sites" method="post">
-    <input type="text" name="Name" maxlength="255" placeholder="Name" />
-    <input type="url" name="Url" maxlength="2000" placeholder="Url" />
-    <textarea name="Note" maxlength="500" placeholder="Notes"></textarea>
-    <input type="text"  name="Source" maxlength="255" placeholder="Source" />
-    <input type="checkbox" name="bookmarklet" id="bookmarklet">
-    <label for="bookmarklet">Bookmarklet?</label>
-    <input type="checkbox" name="ReadItLater" id="rit">
-    <label for="rit">Read It Later?</label>
-    <input type="checkbox" name="Clipped" id="clipped">
-    <label for="clipped">Clipped to OneNote</label>
-    <input type="checkbox" name="Highlight" id="highlight">
-    <label for="highlight">Highlight?</label>
-    <input type="checkbox" name="PersonalHighlight" id="personalHighlight">
-    <label for="personalHighlight">Personal Highlight?</label>
-    <input type="url" name="ArchiveUrl" maxlength="2000" placeholder="Archive Url" />
-    <input type="submit" value="Add" />
+<form action="/sites" method="post" class="pure-form pure-form-aligned">
+    <fieldset>
+        <legend>New Site</legend>
+        <div class="pure-control-group">
+            <label for="Name">Site Name</label>
+            <input type="text" name="Name" maxlength="255" required />
+            </div>
+        <div class="pure-control-group">
+            <label for="Url">Url</label>
+            <input type="url" name="Url" maxlength="2000" placeholder="http://www.example.com" required />
+            </div>
+        <div class="pure-control-group">
+            <label for="Note">Notes</label>
+            <textarea name="Note" maxlength="500"></textarea>
+            </div>
+        <div class="pure-control-group">
+            <label for="Source">Source</label>
+            <input type="text" name="Source" maxlength="255" placeholder="Twitter/Coworker/etc" />
+            </div>
+        <div class="pure-controls">
+            <div class="pure-control-group">
+                <label for="bookmarklet" class="pure-checkbox"><input type="checkbox" name="bookmarklet" id="bookmarklet">Bookmarklet? </label>
+            </div>
+            <div class="pure-control-group">
+                <label for="rit" class="pure-checkbox"><input type="checkbox" name="ReadItLater" id="rit">Read It Later? </label>
+            </div>
+            <div class="pure-control-group">
+                <label for="clipped" class="pure-checkbox"><input type="checkbox" name="Clipped" id="clipped">Clipped to OneNote </label>
+            </div>
+            <div class="pure-control-group">
+                <label for="highlight" class="pure-checkbox"><input type="checkbox" name="Highlight" id="highlight"> Highlight? </label>
+            </div>
+            <div class="pure-control-group">
+                <label for="personalHighlight" class="pure-checkbox"><input type="checkbox" name="PersonalHighlight" id="personalHighlight"> Personal Highlight? </label>
+            </div>
+            </div>
+            <div class="pure-control-group">
+                <label for="ArchiveUrl">Archive Url</label>
+                <input type="url" name="ArchiveUrl" maxlength="2000" placeholder="Archive Url" />
+            </div>
+            <div class="pure-controls">
+                <input type="submit" value="Add" class="pure-button pure-button-primary" />
+            </div>
+</fieldset>
 </form>
 
 

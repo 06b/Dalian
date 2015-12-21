@@ -23,7 +23,7 @@ namespace Dalian.Modules
             Get["/"] = _ =>
             {
                 //TODO: Maybe create some sort of dashboard? Worse case - just redirect to /sites?
-                return "Dalian";
+                return Response.AsRedirect("/sites");
             };
 
             /// <summary>
@@ -51,15 +51,22 @@ namespace Dalian.Modules
 
                 Model = site;
 
-                return View["index", Model];
+                return View["update", Model];
             };
 
             /// <summary>
-            /// TODO: Update a specific site
+            /// Update a specific site
             /// </summary>
             Put["/sites/{siteId}"] = parameter =>
             {
-                throw new NotImplementedException();
+                string Id = parameter.siteId;
+
+                Sites site = this.Bind<Sites>();
+
+                db.Update(site);
+                db.Dispose();
+
+                return Response.AsRedirect("/sites/" + Id);
             };
 
             /// <summary>

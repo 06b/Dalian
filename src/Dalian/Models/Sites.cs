@@ -1,8 +1,9 @@
-﻿using Dalian.Core.Helpers;
+﻿using NPoco;
 using System;
 
 namespace Dalian.Models
 {
+    [PrimaryKey("SiteId")]
     public class Sites
     {
         public string SiteId { get; set; }

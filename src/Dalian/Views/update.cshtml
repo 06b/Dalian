@@ -1,0 +1,57 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
+
+@{
+    Layout = "Views/Shared/_Layout.cshtml";
+}
+
+    @foreach (var site in Model)
+    {
+    <form action="/sites/@site.SiteId" method="post" class="pure-form pure-form-aligned">
+        <input type="hidden" name="X-HTTP-Method-Override" value="PUT" />
+        <fieldset>
+            <legend>Update Site: @site.Name</legend>
+            <div class="pure-control-group">
+                <label for="Name">Site Name</label>
+                <input type="text" name="Name" maxlength="255" required  value="@site.Name"/>
+            </div>
+            <div class="pure-control-group">
+                <label for="Url">Url</label>
+                <input type="url" name="Url" maxlength="2000" required value="@site.Url" />
+            </div>
+            <div class="pure-control-group">
+                <label for="Note">Notes</label>
+                <textarea name="Note" maxlength="500">@site.Note</textarea>
+            </div>
+            <div class="pure-control-group">
+                <label for="Source">Source</label>
+                <input type="text" name="Source" maxlength="255" value="@site.Source" />
+            </div>
+            <div class="pure-controls">
+                <div class="pure-control-group">
+                    <label for="bookmarklet" class="pure-checkbox"><input type="checkbox" name="bookmarklet" id="bookmarklet" @if (site.Bookmarklet == true) {<text>checked="checked"</text>}>Bookmarklet? </label>
+                </div>
+                <div class="pure-control-group">
+                    <label for="rit" class="pure-checkbox"><input type="checkbox" name="ReadItLater" id="rit" @if (site.ReadItLater == true) {<text>checked="checked"</text>}>Read It Later? </label>
+                </div>
+                <div class="pure-control-group">
+                    <label for="clipped" class="pure-checkbox"><input type="checkbox" name="Clipped" id="clipped" @if (site.Clipped == true) {<text>checked="checked"</text>}>Clipped to OneNote </label>
+                </div>
+                <div class="pure-control-group">
+                    <label for="highlight" class="pure-checkbox"><input type="checkbox" name="Highlight" id="highlight" @if (site.Highlight == true) {<text>checked="checked"</text>}> Highlight? </label>
+                </div>
+                <div class="pure-control-group">
+                    <label for="personalHighlight" class="pure-checkbox"><input type="checkbox" name="PersonalHighlight" id="personalHighlight" @if (site.PersonalHighlight == true) {<text>checked="checked"</text>}> Personal Highlight? </label>
+                </div>
+            </div>
+            <div class="pure-control-group">
+                <label for="ArchiveUrl">Archive Url</label>
+                <input type="url" name="ArchiveUrl" maxlength="2000" value="@site.ArchiveUrl" />
+            </div>
+            <div class="pure-controls">
+                <input type="submit" value="Update" class="pure-button pure-button-primary" />
+            </div>
+        </fieldset>
+    </form>
+
+
+    }

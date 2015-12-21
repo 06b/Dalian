@@ -123,6 +123,7 @@
     <Content Include="App_Data\Dalian.sqlite" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\sites.cshtml" />
+    <Content Include="Views\update.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

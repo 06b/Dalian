@@ -6,15 +6,18 @@
     <title>Dalian</title>
 </head>
 <body>
-    Dalian
+    <a href="/sites/new">Add a link</a>
 
-    <ul>
+    <div>
         @foreach (var site in Model)
         {
-            <li>@site.SiteId</li>
-            <li>@site.Name</li>
-            <li>@site.Url</li>
+            <a href="sites/@site.SiteId">
+                <ul>
+                    <li>@site.Name</li>
+                    <li>@site.Url</li>
+                </ul>
+            </a>
         }
-    </ul>
+    </div>
 </body>
 </html>
