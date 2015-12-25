@@ -3,7 +3,7 @@ using System;
 
 namespace Dalian.Models
 {
-    [PrimaryKey("SiteId")]
+    [PrimaryKey("SiteId", AutoIncrement = false)]
     public class Sites
     {
         public string SiteId { get; set; }
