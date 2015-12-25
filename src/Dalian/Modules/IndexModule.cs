@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
+using System.Linq;
 
 namespace Dalian.Modules
 {
@@ -17,7 +18,6 @@ namespace Dalian.Modules
 
         public IndexModule()
         {
-
             IDatabase db = new Database(ConfigurationManager.ConnectionStrings["db"].Name);
 
             Get["/"] = _ =>
@@ -44,10 +44,9 @@ namespace Dalian.Modules
             /// </summary>
             Get["/sites/{siteId}"] = parameter =>
             {
+                string Id = parameter.siteId;
 
-                string id = parameter.siteId;
-
-                var site = db.FetchBy<Sites>(sql => sql.Where(x => x.SiteId == id));
+                var site = db.FetchBy<Sites>(sql => sql.Where(x => x.SiteId == Id));
 
                 Model = site;
 
@@ -61,7 +60,13 @@ namespace Dalian.Modules
             {
                 string Id = parameter.siteId;
 
+                Sites snapshot = db.FetchBy<Sites>(sql => sql.Where(x => x.SiteId == Id)).FirstOrDefault();
+
                 Sites site = this.Bind<Sites>();
+
+                // Don't clear out fields existing fields.
+                site.Active = snapshot.Active;
+                site.DateTime = snapshot.DateTime;
 
                 db.Update(site);
                 db.Dispose();
