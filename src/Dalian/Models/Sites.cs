@@ -24,4 +24,11 @@ namespace Dalian.Models
         public bool Highlight { get; set; }
         public bool PersonalHighlight { get; set; }
     }
+
+    public class SitesMeta
+    {
+        public string MetaTitle { get; set; }
+        public string MetaDescription { get; set; }
+        public string MetaKeywords { get; set; }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using Dalian.Core.Helpers;
 using Dalian.Models;
+using HtmlAgilityPack;
 using Nancy;
 using Nancy.Extensions;
 using Nancy.ModelBinding;
@@ -15,6 +16,39 @@ namespace Dalian.Modules
     public class IndexModule : NancyModule
     {
         protected dynamic Model = new ExpandoObject();
+
+        /// <summary>
+        /// Gets the meta data.
+        /// </summary>
+        /// <param name="Url">The URL.</param>
+        public static SitesMeta GetMetaData(string Url)
+        {
+            SitesMeta meta = new SitesMeta();
+
+            var webGet = new HtmlWeb();
+            var document = webGet.Load(Url);
+
+            meta.MetaTitle = document.DocumentNode.SelectSingleNode("//title").InnerText;
+            var metaTags = document.DocumentNode.SelectNodes("//meta");
+
+            if (metaTags != null)
+            {
+                foreach (var tag in metaTags)
+                {
+                    if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "description")
+                    {
+                        meta.MetaDescription = tag.Attributes["content"].Value;
+                    }
+
+                    if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "keywords")
+                    {
+                        meta.MetaKeywords = tag.Attributes["content"].Value;
+                    }
+                }
+            }
+
+            return meta;
+        }
 
         public IndexModule()
         {
@@ -92,10 +126,16 @@ namespace Dalian.Modules
                 site.Active = true;
                 site.DateTime = DateTime.UtcNow;
 
+                SitesMeta metadata = GetMetaData(site.Url);
+
+                site.MetaTitle = metadata.MetaTitle;
+                site.MetaDescription = metadata.MetaDescription;
+                site.MetaKeywords = metadata.MetaKeywords;
+
                 db.Insert(site);
                 db.Dispose();
 
-                return this.Context.GetRedirect("~/sites/" + site.SiteId);
+                return Context.GetRedirect("~/sites/" + site.SiteId);
             };
         }
     }
