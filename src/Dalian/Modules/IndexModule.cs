@@ -101,6 +101,9 @@ namespace Dalian.Modules
                 // Don't clear out fields existing fields.
                 site.Active = snapshot.Active;
                 site.DateTime = snapshot.DateTime;
+                site.MetaTitle = snapshot.MetaTitle;
+                site.MetaDescription = snapshot.MetaDescription;
+                site.MetaKeywords = snapshot.MetaKeywords;
 
                 db.Update(site);
                 db.Dispose();
