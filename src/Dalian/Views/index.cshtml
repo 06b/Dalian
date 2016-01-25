@@ -1,11 +1,9 @@
 ﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<dynamic>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>Dalian</title>
-</head>
-<body>
+
+@{
+    Layout = "Views/Shared/_Layout.cshtml";
+}
+
     <a href="/sites/new">Add a link</a>
 
     <div>
@@ -19,5 +17,3 @@
             </a>
         }
     </div>
-</body>
-</html>

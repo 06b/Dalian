@@ -87,6 +87,33 @@ namespace Dalian.Modules
                 return View["update", Model];
             };
 
+            Post["/sites/meta"] = parameter => {
+
+                string requestedUrl=string.Empty;
+                if (Request.Form.Values.Count > 0)
+                {
+                    foreach (var i in Request.Form.Values)
+                    {
+                        if (!string.IsNullOrWhiteSpace(requestedUrl))
+                        {
+                            break;
+                        }
+                        requestedUrl = i;
+                    }
+                }
+
+                if (UriChecker.IsValidURI(requestedUrl)) {
+
+                SitesMeta metadata = GetMetaData(requestedUrl);
+                return Response.AsJson(metadata);
+                }
+                else
+                {
+                    return HttpStatusCode.BadRequest;
+                }
+
+            };
+
             /// <summary>
             /// Update a specific site
             /// </summary>

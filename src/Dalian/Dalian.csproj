@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Core\Helpers\sguid.cs" />
+    <Compile Include="Core\Helpers\UriChecker.cs" />
     <Compile Include="Models\Sites.cs" />
     <Compile Include="Models\SitesTags.cs" />
     <Compile Include="Models\Tags.cs" />

@@ -4,26 +4,25 @@
     Layout = "Views/Shared/_Layout.cshtml";
 }
 
-
 <form action="/sites" method="post" class="pure-form pure-form-aligned">
     <fieldset>
         <legend>New Site</legend>
         <div class="pure-control-group">
-            <label for="Name">Site Name</label>
-            <input type="text" name="Name" maxlength="255" required />
-            </div>
-        <div class="pure-control-group">
             <label for="Url">Url</label>
-            <input type="url" name="Url" maxlength="2000" placeholder="http://www.example.com" required />
-            </div>
+            <input id="url" type="url" name="Url" maxlength="2000" placeholder="http://www.example.com" required pattern="https?://.+" />
+        </div>
+        <div class="pure-control-group">
+            <label for="Name">Site Name</label>
+            <input id="metaTitle" type="text" name="Name" maxlength="255" required />
+        </div>
         <div class="pure-control-group">
             <label for="Note">Notes</label>
-            <textarea name="Note" maxlength="500"></textarea>
-            </div>
+            <textarea id="metaDescription" name="Note" maxlength="500"></textarea>
+        </div>
         <div class="pure-control-group">
             <label for="Source">Source</label>
             <input type="text" name="Source" maxlength="255" placeholder="Twitter/Coworker/etc" />
-            </div>
+        </div>
         <div class="pure-controls">
             <div class="pure-control-group">
                 <label for="bookmarklet" class="pure-checkbox"><input type="checkbox" name="bookmarklet" id="bookmarklet">Bookmarklet? </label>
@@ -40,15 +39,48 @@
             <div class="pure-control-group">
                 <label for="personalHighlight" class="pure-checkbox"><input type="checkbox" name="PersonalHighlight" id="personalHighlight"> Personal Highlight? </label>
             </div>
-            </div>
-            <div class="pure-control-group">
-                <label for="ArchiveUrl">Archive Url</label>
-                <input type="url" name="ArchiveUrl" maxlength="2000" placeholder="Archive Url" />
-            </div>
-            <div class="pure-controls">
-                <input type="submit" value="Add" class="pure-button pure-button-primary" />
-            </div>
-</fieldset>
+        </div>
+        <div class="pure-control-group">
+            <label for="ArchiveUrl">Archive Url</label>
+            <input type="url" name="ArchiveUrl" maxlength="2000" placeholder="Archive Url" />
+        </div>
+        <div class="pure-control-group">
+            <label for="Tags">Tags</label>
+            <input id="metaKeywords" type="text" name="Tags" maxlength="2000" placeholder="Separated by comma" />
+        </div>
+        <div class="pure-controls">
+            <input type="submit" value="Add" class="pure-button pure-button-primary" />
+        </div>
+    </fieldset>
 </form>
 
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+
+<script>
+    // https://github.com/yanatan16/nanoajax
+    !function (e, t) { function n(e) { return e && t.XDomainRequest && !/MSIE 1/.test(navigator.userAgent) ? new XDomainRequest : t.XMLHttpRequest ? new XMLHttpRequest : void 0 } function o(e, t, n) { e[t] = e[t] || n } var r = ["responseType", "withCredentials", "timeout", "onprogress"]; e.ajax = function (e, t) { function u(e, n) { return function () { d || t(void 0 === c.status ? e : c.status, c.response || c.responseText || n, c), d = !0 } } var a = e.headers || {}, s = e.body, i = e.method || (s ? "POST" : "GET"), d = !1, c = n(e.cors); c.open(i, e.url, !0); var l = c.onload = u(200); c.onreadystatechange = function () { 4 === c.readyState && l() }, c.onerror = u(null, "Error"), c.ontimeout = u(null, "Timeout"), c.onabort = u(null, "Abort"), s && (o(a, "X-Requested-With", "XMLHttpRequest"), o(a, "Content-Type", "application/x-www-form-urlencoded")); for (var p, f = 0, v = r.length; v > f; f++) p = r[f], void 0 !== e[p] && (c[p] = e[p]); for (var p in a) c.setRequestHeader(p, a[p]); return c.send(s), c }, t.nanoajax = e }({}, function () { return this }());
+
+    document.getElementById('url').addEventListener("blur", function () {
+        BlurEvent(document.getElementById('url').value)
+    }, true);
+
+    function BlurEvent(e) {
+
+        //Check to see if it's a "valid" url - It doesn't really matter that this isn't more strict since the check if it's a valid Uri happens server-side, this is more of just a extra step of not sending an incomplete url such as one missing http/https via ajax
+        var isValidUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(e.toLocaleLowerCase());
+
+        if (isValidUrl) {
+            nanoajax.ajax({ url: '/sites/meta', method: 'POST', body: 'requestedUrl=' + e }, function (code, responseText, request) {
+                if (code === 200) {
+                    JSON.parse(responseText, function (key, value) {
+                        document.getElementById(key).value = value;
+                    });
+                }
+            });
+        }
+
+    }
+
+
+</script>
