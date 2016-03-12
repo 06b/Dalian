@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using NPoco;
 
 namespace Dalian.Models
 {
+    [PrimaryKey("TagId", AutoIncrement = false)]
     public class Tags
     {
         public string TagId { get; set; }

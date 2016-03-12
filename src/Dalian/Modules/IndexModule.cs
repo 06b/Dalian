@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
 using System.Linq;
+using System.Text;
 
 namespace Dalian.Modules
 {
@@ -26,7 +27,22 @@ namespace Dalian.Modules
             SitesMeta meta = new SitesMeta();
 
             var webGet = new HtmlWeb();
-            var document = webGet.Load(Url);
+            var document = new HtmlDocument();
+            try {
+                document = webGet.Load(Url);
+            }
+            catch(Exception ex)
+            {
+                if (ex.Message == "The underlying connection was closed: The connection was closed unexpectedly.")
+                {
+                    //Sometimes the default UserAgent errors out - possibly due to if the site is using some sort of UserAgent Sniffing
+
+                    // Windows ME
+                    webGet.UserAgent = "Opera/9.80 (Windows ME; U; Edition Campaign 21; en) Presto/2.6 Version/10.63";
+                    document = webGet.Load(Url);
+
+                }
+            }
 
             meta.MetaTitle = document.DocumentNode.SelectSingleNode("//title").InnerText;
             var metaTags = document.DocumentNode.SelectNodes("//meta");
@@ -82,7 +98,24 @@ namespace Dalian.Modules
 
                 var site = db.FetchBy<Sites>(sql => sql.Where(x => x.SiteId == Id));
 
-                Model = site;
+                List<Tags> AllTags = db.Fetch<Tags>().ToList();
+                List<SiteTags> Tags = db.FetchBy<SiteTags>(sql => sql.Where(x => x.SiteId == Id)).ToList();
+
+                List<Tags> tagList = AllTags.Where(allTags => Tags.Select(tags => tags.TagId).Contains(allTags.TagId)).ToList();
+
+                bool firstCSV = true;
+                StringBuilder tagsCSV = new StringBuilder();
+                foreach (var tag in tagList)
+                {
+                    if (!firstCSV) { tagsCSV.Append(","); }
+                    tagsCSV.Append(tag.TagName);
+                    firstCSV = false;
+                }
+
+                Model.site = site;
+                Model.tags = tagsCSV.ToString();
+
+                db.Dispose();
 
                 return View["update", Model];
             };
@@ -135,6 +168,60 @@ namespace Dalian.Modules
                 db.Update(site);
                 db.Dispose();
 
+                string TagsPost = Request.Form.Tags.Value;
+                List<string> Tags = TagsPost.ToLower().Split(',').Select(s => s.Trim()).ToList();
+
+                List<Tags> AllTags = db.Fetch<Tags>();
+                db.Dispose();
+
+                List<string> AllTagNames = AllTags.Select(tn => tn.TagName).ToList();
+
+                //Delete all existing Tags for current site before linking up any new tags
+                db.Delete<SiteTags>("where SiteId = @0", Id);
+                db.Dispose();
+
+                foreach (string tag in Tags)
+                {
+                    if (!AllTagNames.Contains(tag))
+                    {
+                        Tags newTag = new Tags();
+
+                        newTag.TagId = ShortGuid.NewGuid().ToString();
+                        newTag.TagName = tag;
+                        newTag.Active = true;
+
+                        db.Insert(newTag);
+                        db.Dispose();
+
+                        SiteTags newSiteTag = new SiteTags();
+                        newSiteTag.SiteId = site.SiteId;
+                        newSiteTag.TagId = newTag.TagId;
+
+                        db.Insert(newSiteTag);
+
+                        db.Dispose();
+                    }
+                    else
+                    {
+                        try {
+                        var ExistingTag = db.FetchBy<Tags>(sql => sql.Where(x => x.TagName == tag)).FirstOrDefault();
+
+                        SiteTags newSiteTag = new SiteTags();
+                        newSiteTag.SiteId = site.SiteId;
+                        newSiteTag.TagId = ExistingTag.TagId;
+
+                        db.Insert(newSiteTag);
+
+                        db.Dispose();
+                        }
+                        catch {
+                            //Move along
+                        }
+                    }
+                }
+
+
+
                 return Response.AsRedirect("/sites/" + Id);
             };
 
@@ -156,14 +243,61 @@ namespace Dalian.Modules
                 site.Active = true;
                 site.DateTime = DateTime.UtcNow;
 
-                SitesMeta metadata = GetMetaData(site.Url);
+                if (UriChecker.IsValidURI(site.Url))
+                {
+                    SitesMeta metadata = GetMetaData(site.Url);
 
-                site.MetaTitle = metadata.MetaTitle;
-                site.MetaDescription = metadata.MetaDescription;
-                site.MetaKeywords = metadata.MetaKeywords;
+                    site.MetaTitle = metadata.MetaTitle;
+                    site.MetaDescription = metadata.MetaDescription;
+                    site.MetaKeywords = metadata.MetaKeywords;
+                }
 
                 db.Insert(site);
                 db.Dispose();
+
+                string TagsPost = Request.Form.Tags.Value;
+                List<string> Tags = TagsPost.ToLower().Split(',').Select(s => s.Trim()).ToList();
+
+                List<Tags> AllTags = db.Fetch<Tags>();
+                db.Dispose();
+
+                List<string> AllTagNames = AllTags.Select(tn => tn.TagName).ToList();
+
+                foreach (string tag in Tags){
+                    if (!AllTagNames.Contains(tag))
+                    {
+                        Tags newTag = new Tags();
+
+                        newTag.TagId = ShortGuid.NewGuid().ToString();
+                        newTag.TagName = tag;
+                        newTag.Active = true;
+
+                        db.Insert(newTag);
+
+                        SiteTags newSiteTag = new SiteTags();
+                        newSiteTag.SiteId = site.SiteId;
+                        newSiteTag.TagId = newTag.TagId;
+
+                        db.Insert(newSiteTag);
+
+                        db.Dispose();
+                    }
+                    else
+                    {
+
+                        var ExistingTag = db.FetchBy<Tags>(sql => sql.Where(x => x.TagName == tag)).FirstOrDefault();
+
+                        SiteTags newSiteTag = new SiteTags();
+                        newSiteTag.SiteId = site.SiteId;
+                        newSiteTag.TagId = ExistingTag.TagId;
+
+                        db.Insert(newSiteTag);
+
+                        db.Dispose();
+                    }
+                }
+
+
 
                 return Context.GetRedirect("~/sites/" + site.SiteId);
             };

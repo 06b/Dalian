@@ -4,7 +4,7 @@
     Layout = "Views/Shared/_Layout.cshtml";
 }
 
-    @foreach (var site in Model)
+    @foreach (var site in Model.site)
     {
     <form action="/sites/@site.SiteId" method="post" class="pure-form pure-form-aligned">
         <input type="hidden" name="X-HTTP-Method-Override" value="PUT" />
@@ -42,6 +42,10 @@
                 <div class="pure-control-group">
                     <label for="personalHighlight" class="pure-checkbox"><input type="checkbox" name="PersonalHighlight" id="personalHighlight" @if (site.PersonalHighlight == true) {<text>checked="checked"</text>}> Personal Highlight? </label>
                 </div>
+            </div>
+            <div class="pure-control-group">
+                <label for="Tags">Tags</label>
+                <input type="text" name="Tags" maxlength="2000" value="@Model.tags" />
             </div>
             <div class="pure-control-group">
                 <label for="ArchiveUrl">Archive Url</label>
