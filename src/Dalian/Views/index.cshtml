@@ -5,6 +5,10 @@
 }
 
     <a href="/sites/new">Add a link</a>
+<form action="/sites/bulk" method="post" enctype="multipart/form-data">
+    <input type="file" name="bulk-file-upload" required />
+    <input type="submit" />
+</form>
 
     <div>
         @foreach (var site in Model)

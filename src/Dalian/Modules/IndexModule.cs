@@ -1,4 +1,5 @@
-﻿using Dalian.Core.Helpers;
+﻿using BookmarksManager;
+using Dalian.Core.Helpers;
 using Dalian.Models;
 using HtmlAgilityPack;
 using Nancy;
@@ -8,6 +9,7 @@ using NPoco;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
@@ -28,10 +30,11 @@ namespace Dalian.Modules
 
             var webGet = new HtmlWeb();
             var document = new HtmlDocument();
-            try {
+            try
+            {
                 document = webGet.Load(Url);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (ex.Message == "The underlying connection was closed: The connection was closed unexpectedly.")
                 {
@@ -120,9 +123,10 @@ namespace Dalian.Modules
                 return View["update", Model];
             };
 
-            Post["/sites/meta"] = parameter => {
+            Post["/sites/meta"] = parameter =>
+            {
 
-                string requestedUrl=string.Empty;
+                string requestedUrl = string.Empty;
                 if (Request.Form.Values.Count > 0)
                 {
                     foreach (var i in Request.Form.Values)
@@ -135,10 +139,11 @@ namespace Dalian.Modules
                     }
                 }
 
-                if (UriChecker.IsValidURI(requestedUrl)) {
+                if (UriChecker.IsValidURI(requestedUrl))
+                {
 
-                SitesMeta metadata = GetMetaData(requestedUrl);
-                return Response.AsJson(metadata);
+                    SitesMeta metadata = GetMetaData(requestedUrl);
+                    return Response.AsJson(metadata);
                 }
                 else
                 {
@@ -203,18 +208,20 @@ namespace Dalian.Modules
                     }
                     else
                     {
-                        try {
-                        var ExistingTag = db.FetchBy<Tags>(sql => sql.Where(x => x.TagName == tag)).FirstOrDefault();
+                        try
+                        {
+                            var ExistingTag = db.FetchBy<Tags>(sql => sql.Where(x => x.TagName == tag)).FirstOrDefault();
 
-                        SiteTags newSiteTag = new SiteTags();
-                        newSiteTag.SiteId = site.SiteId;
-                        newSiteTag.TagId = ExistingTag.TagId;
+                            SiteTags newSiteTag = new SiteTags();
+                            newSiteTag.SiteId = site.SiteId;
+                            newSiteTag.TagId = ExistingTag.TagId;
 
-                        db.Insert(newSiteTag);
+                            db.Insert(newSiteTag);
 
-                        db.Dispose();
+                            db.Dispose();
                         }
-                        catch {
+                        catch
+                        {
                             //Move along
                         }
                     }
@@ -231,6 +238,25 @@ namespace Dalian.Modules
             Get["/sites/new"] = _ =>
             {
                 return View["sites", Model];
+            };
+
+            Post["/sites/bulk"] = _ =>
+            {
+
+                var file = Request.Files.FirstOrDefault();
+
+                if (file != null)
+                {
+
+                    var reader = new NetscapeBookmarksReader();
+                    var bookmarks = reader.Read(file.Value);
+                    foreach (var b in bookmarks.AllLinks)
+                    {
+                        Debug.WriteLine("Type {0}, Title: {1}", b.GetType().Name, b.Title);
+                    }
+                }
+
+                return Response.AsRedirect("/sites");
             };
 
             /// <summary>
@@ -263,7 +289,8 @@ namespace Dalian.Modules
 
                 List<string> AllTagNames = AllTags.Select(tn => tn.TagName).ToList();
 
-                foreach (string tag in Tags){
+                foreach (string tag in Tags)
+                {
                     if (!AllTagNames.Contains(tag))
                     {
                         Tags newTag = new Tags();
