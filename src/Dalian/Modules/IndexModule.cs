@@ -47,28 +47,34 @@ namespace Dalian.Modules
                 }
             }
 
-            //Get the Title of the website
-            meta.MetaTitle = document.DocumentNode.SelectSingleNode("//title").InnerText;
-
-            //Get MetaTags of the website
-            var metaTags = document.DocumentNode.SelectNodes("//meta");
-
-            if (metaTags != null)
+            // Handle sites that might not exist anymore
+            if (document.DocumentNode.FirstChild != null)
             {
-                foreach (var tag in metaTags)
-                {
-                    //Check if Meta Description exists
-                    if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "description")
-                    {
-                        meta.MetaDescription = tag.Attributes["content"].Value;
-                    }
 
-                    //Check if Meta Keywords exist
-                    if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "keywords")
+                //Get the Title of the website
+                meta.MetaTitle = document.DocumentNode.SelectSingleNode("//title").InnerText;
+
+                //Get MetaTags of the website
+                var metaTags = document.DocumentNode.SelectNodes("//meta");
+
+                if (metaTags != null)
+                {
+                    foreach (var tag in metaTags)
                     {
-                        meta.MetaKeywords = tag.Attributes["content"].Value;
+                        //Check if Meta Description exists
+                        if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "description")
+                        {
+                            meta.MetaDescription = tag.Attributes["content"].Value;
+                        }
+
+                        //Check if Meta Keywords exist
+                        if (tag.Attributes["name"] != null && tag.Attributes["content"] != null && tag.Attributes["name"].Value == "keywords")
+                        {
+                            meta.MetaKeywords = tag.Attributes["content"].Value;
+                        }
                     }
                 }
+
             }
 
             return meta;
